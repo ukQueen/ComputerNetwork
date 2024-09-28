@@ -3,12 +3,13 @@
 #include <iomanip>
 #include <vector>
 #include <string>
+#include <sstream>
 
 
 using namespace std;
 
-class Network
-{
+class Network {
+
 	int GROUPS = 5; //количество групп
 	int COMMUTATORS= 2; //количество коммутаторов в группе
 	int NODES = 1; //количество узлов на коммутатор
@@ -22,6 +23,8 @@ class Network
 	int count_vertex; //количество всех вершин (узлы + коммутаторы)
 	//int bandwidth_in_group;
 	//int bandwidth_between_group;
+	vector<vector<int>> messages;
+	vector<vector<string>> status;
 	
 	//vector<vector<int>> matrix_adj; //Матрица смежности
 	//vector<vector<int>> matrix_wght; //Матрица весов
@@ -31,9 +34,16 @@ class Network
 
 
 	void print_matrix(string str, vector<vector<int>> matr);
+	
 
 public:
 	Network();
+	
 	void Print_matrix_bandwidth();
+	
+	void menu();
+	int checking_input(int max);
+	void adding_msg();
+
 };
 
