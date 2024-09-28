@@ -4,6 +4,6 @@
 int main()
 {
     Network a;
-    a.Print_matrix_adj();
+    a.Print_matrix_bandwidth();
 }
 

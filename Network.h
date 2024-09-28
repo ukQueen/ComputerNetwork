@@ -11,7 +11,7 @@ class Network
 {
 	int GROUPS = 5; //количество групп
 	int COMMUTATORS= 2; //количество коммутаторов в группе
-	int NODES = 2; //количество узлов на коммутатор
+	int NODES = 1; //количество узлов на коммутатор
 	int BANDWIDTH_IN_GROUP = 4; //пропускная способность внутри группы
 	int BANDWIDTH_BETWEEN_GROUP = 2; //пропускная способность между группами
 
@@ -23,7 +23,7 @@ class Network
 	//int bandwidth_in_group;
 	//int bandwidth_between_group;
 	
-	vector<vector<int>> matrix_adj; //Матрица смежности
+	//vector<vector<int>> matrix_adj; //Матрица смежности
 	//vector<vector<int>> matrix_wght; //Матрица весов
 	//vector<int> vertex_degree; //степени вершин
 	vector<vector<int>> matrix_bandwidth; //Матрица пропусных способностей
@@ -34,6 +34,6 @@ class Network
 
 public:
 	Network();
-	void Print_matrix_adj();
+	void Print_matrix_bandwidth();
 };
 
