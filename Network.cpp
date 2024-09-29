@@ -423,11 +423,13 @@ void Network::menu() {
 
 void Network::AddMessage(vector<int> message) {
 
+	//обработать ситуацию когда соо из одного источника
 	auto path = Dijkstra_algorythm(message);
 	this->messages.push_back(message);
 	this->path.push_back(path);
 	this->status.push_back({ "Сообщение ожидает отправки" });
-
+	this->reminder.push_back(message[1]);
+	this->reserv.push_back(true);////////////////////
 
 }
 
@@ -441,14 +443,73 @@ void Network::printInfo() {
 
 }
 
-
 void Network::NextStep() {
-	for (int i = 0; i < messages.size();i++) {
-		if (status[i][0] == "Сообщение ожидает отправки") {
-			status[i].pop_back();
+
+	for (int i = 0; i < messages.size(); i++) {
+		if (status[i][0].size()==0) {
+			int local_from = path[i][0]; //точка в которой сейчас находится сообщение
+			int local_to = path[i][1]; //точка в которую передается шаг на данном шаге
+			int index_from = messages[i][0]; //отправитель
+			int index_to = messages[i][2]; //получатель
+			int message_cost = messages[i][1]; //длина сообщения
+			
+
+			if (local_from == path[i][1]) {
+				matrix_load[local_from][local_to] += reserv[i];
+				matrix_load[local_to][local_from] += reserv[i];
+				reserv[i] = 0;
+				vector<int> new_path = Dijkstra_algorythm({ local_from, message_cost, index_to });
+				new_path.insert(new_path.begin(), { path[i][0],path[i][1] });
+				path[i] = new_path;
+				reminder[i] = message_cost;
+			}
+			else {
+				int can_send = reminder[i] < matrix_load[local_from][local_to]? reminder[i]: matrix_load[local_from][local_to];
+				
+				int need_steps = reminder[i] / can_send;
+				need_steps = reminder[i] % can_send == 0 ? need_steps : need_steps + 1;
+
+				matrix_load[index_from][index_to] -= can_send;
+				matrix_load[index_to][index_from] -= can_send;
+				reserv[i] = can_send;
+
+				if (path.size() > 2) {
+				int old_steps;//считаем сколько было шагов 
+					for (int ii = 0; ii < path.size()-2; ii += 2) {
+						if (!(local_from == path[i][ii] && local_to == path[i][ii + 1])) {
+							old_steps = ii / 2;
+						}
+						else {
+							break;
+						}
+					}
+					if (old_steps != need_steps) {
+						path[i].erase(path[i].begin(), path[i].begin());
+					}
+				}
+
+				
+
+				reminder[i] -= can_send;
+				
+			}
+		}
+		else if (status[i][0] == "Сообщение ожидает отправки") {
+			status[i].erase(status[i].begin());
 		}
 		else {
-
+			if (path[i].size() != 0) {
+				path[i].erase(path[i].begin());
+				//status[i].erase(status[i].begin());
+			}
+			else {
+				messages.erase(messages.begin());
+				path.erase(path.begin());
+				//status.erase(status.begin());
+			}
 		}
+
 	}
+
+
 }
