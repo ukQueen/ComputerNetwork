@@ -388,15 +388,16 @@ void Network::AddMessage(vector<int> message) {
 
 void Network::NextStep() {
 	for (int i = 0; i < messages.size(); i++) {
-		if (status[i][0].size()==0) {
+		if (status[i][0].size() == 0) {//рассматриваются ситации когда сообщение уже передается
+
 			int local_from = path[i][0]; //точка в которой сейчас находится сообщение
 			int local_to = path[i][1]; //точка в которую передается шаг на данном шаге
 			int index_from = messages[i][0]; //отправитель
 			int index_to = messages[i][2]; //получатель
 			int message_cost = messages[i][1]; //длина сообщения
-			
 
-			if (local_from == path[i][1]) {
+
+			if (local_from == path[i][1]) {// ситауция когда сообщение находится в одном узле из за штрафа (то есть никуда не передается)
 				matrix_load[local_from][local_to] += reserv[i];
 				matrix_load[local_to][local_from] += reserv[i];
 				reserv[i] = 0;
@@ -405,9 +406,10 @@ void Network::NextStep() {
 				path[i] = new_path;
 				reminder[i] = message_cost;
 			}
-			else {
-				int can_send = reminder[i] < matrix_load[local_from][local_to]? reminder[i]: matrix_load[local_from][local_to];
-				
+			else { //ситуация когда передается сообщение из одного узда в другой
+				//пропускная способность изменяется
+				int can_send = reminder[i] < matrix_load[local_from][local_to] ? reminder[i] : matrix_load[local_from][local_to];
+
 				int need_steps = reminder[i] / can_send;
 				need_steps = reminder[i] % can_send == 0 ? need_steps : need_steps + 1;
 
@@ -415,47 +417,42 @@ void Network::NextStep() {
 				matrix_load[index_to][index_from] -= can_send;
 				reserv[i] = can_send;
 
-				if (path.size() > 2) {
-				int old_steps;//считаем сколько было шагов 
-					for (int ii = 0; ii < path.size()-2; ii += 2) {
+				if (path.size() > 2) {//сообщение может измениться если пропускная способность увеличилась
+
+					int old_steps;//считаем сколько было шагов 
+					for (int ii = 0; ii < path.size() - 2; ii += 2) {
 						if (!(local_from == path[i][ii] && local_to == path[i][ii + 1])) {
 							old_steps = ii / 2;
-						}
-						else {
 							break;
 						}
 					}
 					if (old_steps != need_steps) {
-						path[i].erase(path[i].begin(), path[i].begin())
+						path[i].erase(path[i].begin(), path[i].begin() + old_steps * 2);
+						for (int iii = 0; iii < need_steps; iii++) {
+							path[i].insert(path[i].begin(), { local_from, local_to });
+						}
 					}
 				}
 
-				
-
 				reminder[i] -= can_send;
-				
+
+			}
+
+			//в конце шага нам нужн удалить данный шаг
+			if (path[i].size() != 0) {
+				path[i].erase(path[i].begin());
+				//status[i].erase(status[i].begin());
+			}
+			else {
+				messages.erase(messages.begin());
+				path.erase(path.begin());
+				//status.erase(status.begin());
 			}
 		}
 
+		else {
+			status[i].erase(status[i].begin());
+
+		}
 	}
-	if ()
-
-
-		if ()
-
-			if (status[i][0] == "Сообщение ожидает отправки") {
-				status[i].erase(status[i].begin());
-			}
-			else {
-				if (path[i].size() != 0) {
-					path[i].erase(path[i].begin());
-					//status[i].erase(status[i].begin());
-				}
-				else {
-					messages.erase(messages.begin());
-					path.erase(path.begin());
-					//status.erase(status.begin());
-				}
-			}
-
 }
