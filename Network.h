@@ -26,8 +26,9 @@ class Network
 	//int bandwidth_between_group;
 	vector<vector<int>> messages;
 	vector<vector<string>> status;
-
 	vector<vector<int>> path;
+	vector<int> reserv;//сколько зарезервировано на шаге1 в каждом сообщении
+	vector<int> reminder; //сколько осталось передать от одной вершины к другой
 
 	
 	//vector<vector<int>> matrix_adj; //Матрица смежности
