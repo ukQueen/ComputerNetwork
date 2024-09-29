@@ -13,7 +13,7 @@ int main()
    
   //  Network NikitaRomashko(10, 3, 4, 3, 3);
     
-    Network a(4,3,0,3,5);
+    Network a(4,3,1,5,2);
    // Network GeorgyZoloev(7, 6, 1, 2, 3);
 
     //GeorgyZoloev.Print_matrix_bandwidth();

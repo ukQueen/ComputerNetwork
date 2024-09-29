@@ -27,7 +27,7 @@ Network::Network(int GROUPS, int COMMUTATORS, int NODES, int BANDWIDTH_IN_GROUP,
 		}	
 	}
 
-	for (int i = 0, back=COMMUTATORS-1, group=GROUPS-1; i < COMMUTATORS; i++, back--, group-=COMMUTATORS) {
+	for (int i = 0, back=COMMUTATORS-1, group=GROUPS-1; i < COMMUTATORS; i++, back--, group-=GROUPS/COMMUTATORS) {
 
 		for (int ii = count_nodes + i, group_right=group ; ii < count_vertex; ii+=COMMUTATORS, group_right++) {
 			if (group_right >= GROUPS) {
@@ -126,7 +126,8 @@ vector<int> Network::Dijkstra_algorythm(vector<int> message) {
 		for (int i = 0; i < matrix_load[current].size(); i++) {
 			if (matrix_load[current][i] != 0) {
 				//bool condition = vertex[current] + matrix_load[current][i] <= vertex[i];
-				int buf = cost / matrix_load[current][i] + 1;
+				int buf = cost / matrix_load[current][i];
+				buf = cost % matrix_load[current][i]==0? buf :buf + 1;
 				if (!(current == index_from || current == index_to)) {
 					buf++; //прибавляем штраф
 				}
@@ -170,23 +171,52 @@ vector<int> Network::Dijkstra_algorythm(vector<int> message) {
 	//преобразуется в 1 20 1 20 1 20 20 20 ! 20 21 20 21 20 21 21 21 ! 21 2 21 2 21 2  
 	//шаг по два элемента в массиве (так будет проще)
 	vector<int> current_route;
-	for (int i = 0; i < route[index_to].size(); i++) {
-		current_route.push_back(route[index_to][i]);
+	for (int i = 0; i < route[index_to].size() - 1; i++) {
+		int index_1;
+		int index_2;
+		int cost_inner;
+		int broad;
+		if (i != route[index_to].size() - 2) {
+			index_1 = route[index_to][i];
+			index_2 = route[index_to][i + 1];
+			cost_inner = matrix_load[index_1][index_2];
 
-
-		if (i != 0 && i != route[index_to].size() - 1) {
-			int index_1 = route[index_to][i - 1];
-			int index_2 = route[index_to][i];
-			int cost_inner = matrix_load[index_1][index_2];
-
-			for (int ii = 0; ii < cost / cost_inner +1; i++) {
-
+			broad = cost / cost_inner;
+			broad = cost % cost_inner == 0 ? broad : broad+1;
+			for (int ii = 0; ii < broad; ii++) {
+				current_route.push_back(index_1);
+				current_route.push_back(index_2);
 			}
+
+			//добавим штраф
+			current_route.push_back(index_2);
+			current_route.push_back(index_2);
 		}
 		else {
+			cost_inner = this->BANDWIDTH_IN_GROUP;
+			index_1 = route[index_to][i];
+			index_2 = route[index_to][i+1];
 
+			broad = cost / cost_inner;
+			broad = cost % cost_inner == 0 ? broad : broad+1;
+			for (int ii = 0; ii < broad; ii++) {
+				current_route.push_back(index_1);
+				current_route.push_back(index_2);
+			}
 		}
 	}
+
+
+	cout << "\nПуть: ";
+	if (route[index_to].size() == 0) {
+		cout << "Пути не существует\n";
+	}
+	else
+		for (int i = 0; i < current_route.size(); i++) {
+			cout << current_route[i];
+			if (i != current_route.size() - 1)
+				cout << " -> ";
+		}
 
 	return route[index_to];
 }
@@ -345,14 +375,21 @@ void Network::menu() {
 }
 
 
-
-void Network::NextStep() {
-
-}
-
-//TODO: добавление соо в сообщения, добаление маршррута в маршруты
 void Network::AddMessage(vector<int> message) {
 	auto path = Dijkstra_algorythm(message);
 	this->messages.push_back(message);
-	this->path.push_back()
+	this->path.push_back(path);
+	this->status.push_back({ "Сообщение ожидает отправки" });
+}
+
+
+void Network::NextStep() {
+	for (int i = 0; i < messages.size();i++) {
+		if (status[i][0] == "Сообщение ожидает отправки") {
+			messages.erase(messages.begin());
+		}
+		else {
+
+		}
+	}
 }
