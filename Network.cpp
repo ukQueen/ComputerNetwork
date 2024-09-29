@@ -16,22 +16,15 @@ Network::Network(int GROUPS, int COMMUTATORS, int NODES, int BANDWIDTH_IN_GROUP,
 	vector<vector<int>> new_bandwidth(count_vertex, vector<int>(count_vertex, 0));
 	matrix_bandwidth = new_bandwidth;
 
-<<<<<<< HEAD
-	for (int i = 0, k = NODES, ii = count_nodes; i < count_nodes; i++) {
-=======
+
 	for (int i = 0, ii=count_nodes, k = NODES; i < count_nodes;i++) {
->>>>>>> origin/TestingMain
 		k--;
 		matrix_bandwidth[i][ii] = BANDWIDTH_IN_GROUP; //пропускная способность в группе
 		matrix_bandwidth[ii][i] = BANDWIDTH_IN_GROUP;
 		if (k == 0) {
 			ii++;
 			k = NODES;
-<<<<<<< HEAD
-		}
-=======
 		}	
->>>>>>> origin/TestingMain
 	}
 
 	for (int i = 0, back=COMMUTATORS-1, group=GROUPS-1; i < COMMUTATORS; i++, back--, group-=COMMUTATORS) {
@@ -107,7 +100,6 @@ void Network::Print_matrix_bandwidth() {
 	print_matrix("Matrix_adj", matrix_bandwidth);	
 }
 
-<<<<<<< HEAD
 
 vector<int> Network::Dijkstra_algorythm(vector<int> message) {
 	int index_from = message[0];
@@ -198,7 +190,8 @@ bool Network::CheckBoolVector(vector<bool> v) {
 }
 
 void Network::NextStep(){}
-=======
+
+
 int Network::checking_input(int max) {
 	int n;
 
@@ -332,4 +325,3 @@ void Network::menu() {
 
 
 
->>>>>>> origin/TestingMain
