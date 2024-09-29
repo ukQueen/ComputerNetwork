@@ -171,6 +171,7 @@ vector<int> Network::Dijkstra_algorythm(vector<int> message) {
 	//допустим был маршрут 1->(2/5 + 4/5 + 5/5 + фтраф) 20-> (2/5 + 4/5 + 5/5 + фтраф) 21-> (2/5 + 4/5 + 5/5) 2
 	//преобразуется в 1 20 1 20 1 20 20 20 ! 20 21 20 21 20 21 21 21 ! 21 2 21 2 21 2  
 	//шаг по два элемента в массиве (так будет проще)
+
 	vector<int> current_route;
 	for (int i = 0; i < route[index_to].size(); i++) {
 		current_route.push_back(route[index_to][i]);
@@ -280,29 +281,34 @@ void Network::adding_msg() {
 
 void Network::menu() {
 
-	cout << "Программа, моделирующая работу механизма передачи сообщения в коммуникационной сети суперкомпьютера" << endl;
-
+	bool mainMenu = true;
 	bool secondMenu = false;
+	int msg_count;
 
 	while (true) {
+
 		if (!secondMenu) {
 
 			cout << "\n Выберите действие: \n";
-			cout << " [1] Отправить сообщение \n";
-			cout << " [0] Выход из программы \n";
+			cout << " [1] Отправить сообщения (до 10 штук) \n";
+			cout << " [0] Сменить студента \n";
 
 			int b = checking_input(1);
 
 			switch (b) {
 
 			case 1:
-				adding_msg();
+
+				cout << "Введите количество сообщений, которое хотите отправить (от 0 до 10): ";
+				msg_count = checking_input(11);
+
+				for (int i = 0; i < msg_count; i++) {
+					adding_msg();
+				}
 				secondMenu = true;
 				break;
 
-
 			case 0:
-				cout << "Выход из программы...\n";
 				return;
 			}
 		}
@@ -311,10 +317,9 @@ void Network::menu() {
 			cout << "\n Выберите действие: \n";
 			cout << " [1] Отправить сообщения (до 10 штук) \n";
 			cout << " [2] Следующий шаг \n";
-			cout << " [0] Выход из программы \n";
+			cout << " [0] Сменить студента \n";
 
 			int b = checking_input(2);
-			int msg_count;
 
 			switch (b) {
 			case 1:
@@ -356,5 +361,17 @@ void Network::NextStep() {
 void Network::AddMessage(vector<int> message) {
 	auto path = Dijkstra_algorythm(message);
 	this->messages.push_back(message);
-	this->path.push_back()
 }
+
+
+void Network::printInfo() {
+
+	cout << "\nКоличество групп: " << GROUPS << endl;
+	cout << "Количество коммутаторов в группе: " << COMMUTATORS << endl;
+	cout << "Количество узлов на коммутатор: " << NODES << endl;
+	cout << "Пропускная способность внутри группы: " << BANDWIDTH_IN_GROUP << endl;
+	cout << "Пропускная способность между группами: " << BANDWIDTH_BETWEEN_GROUP << endl;
+
+}
+
+

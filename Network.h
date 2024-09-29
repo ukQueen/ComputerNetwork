@@ -53,8 +53,24 @@ public:
 	void AddMessage(vector<int> message);
 	
 	void menu();
+	void printInfo();
 	int checking_input(int max);
 	void adding_msg();
+
+	// Сеттеры
+	void setGroups(int groups) { GROUPS = groups;}
+	void setCommuntators(int commutators) { COMMUTATORS = commutators; }
+	void setNodes(int nodes) { NODES = nodes; }
+	void setBandwidthInGroup(int bandwidth_in_group) { BANDWIDTH_IN_GROUP = bandwidth_in_group; }
+	void setBandwidthBetweenGroup(int bandwidth_between_group) { BANDWIDTH_BETWEEN_GROUP = bandwidth_between_group; }
+
+	// Геттеры
+	int getGroups() const { return GROUPS; }
+	int getCommutators() const { return COMMUTATORS;}
+	int getNodes() const { return NODES;}
+	int getBandwidthInGroup() const { return BANDWIDTH_IN_GROUP; }
+	int getBandwidthBetweenGroup() const { return BANDWIDTH_BETWEEN_GROUP; }
+
 
 };
 
