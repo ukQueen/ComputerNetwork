@@ -49,7 +49,8 @@ public:
 	Network();
 	Network(int GROUPS,	int COMMUTATORS, int NODES, int BANDWIDTH_IN_GROUP, int BANDWIDTH_BETWEEN_GROUP);
 	void Print_matrix_bandwidth();
-	void NextStep();
+	void NextStep(); 
+	void AddMessage(vector<int> message);
 	
 	void menu();
 	int checking_input(int max);

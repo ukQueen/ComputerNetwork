@@ -166,6 +166,30 @@ vector<int> Network::Dijkstra_algorythm(vector<int> message) {
 				cout << " -> ";
 		}
 
+	//TODO: закончить реализацию маршрута
+	//cuurent_node будет хранить новый маршрут 
+	//допустим был маршрут 1->(2/5 + 4/5 + 5/5 + фтраф) 20-> (2/5 + 4/5 + 5/5 + фтраф) 21-> (2/5 + 4/5 + 5/5) 2
+	//преобразуется в 1 20 1 20 1 20 20 20 ! 20 21 20 21 20 21 21 21 ! 21 2 21 2 21 2  
+	//шаг по два элемента в массиве (так будет проще)
+	vector<int> current_route;
+	for (int i = 0; i < route[index_to].size(); i++) {
+		current_route.push_back(route[index_to][i]);
+
+
+		if (i != 0 && i != route[index_to].size() - 1) {
+			int index_1 = route[index_to][i - 1];
+			int index_2 = route[index_to][i];
+			int cost_inner = matrix_load[index_1][index_2];
+
+			for (int ii = 0; ii < cost / cost_inner +1; i++) {
+
+			}
+		}
+		else {
+
+		}
+	}
+
 	return route[index_to];
 }
 
@@ -190,8 +214,6 @@ bool Network::CheckBoolVector(vector<bool> v) {
 	}
 	return result;
 }
-
-void Network::NextStep(){}
 
 
 int Network::checking_input(int max) {
@@ -326,4 +348,13 @@ void Network::menu() {
 
 
 
+void Network::NextStep() {
 
+}
+
+//TODO: добавление соо в сообщения, добаление маршррута в маршруты
+void Network::AddMessage(vector<int> message) {
+	auto path = Dijkstra_algorythm(message);
+	this->messages.push_back(message);
+	this->path.push_back()
+}
