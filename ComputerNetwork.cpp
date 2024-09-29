@@ -1,7 +1,6 @@
 ﻿#include <iostream>
 #include "Network.h"
 
-<<<<<<< HEAD
 int main()
 {
     setlocale(LC_ALL, "rus");
@@ -22,15 +21,6 @@ int main()
 
     a.Print_matrix_bandwidth();
     a.Dijkstra_algorythm({ 0,5,3 });
-=======
-int main() {
-
-    setlocale(LC_ALL, "Russian");
-    Network a;
-    //a.Print_matrix_bandwidth();
-    a.menu();
-
->>>>>>> origin/TestingMain
 }
 
 

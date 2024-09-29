@@ -8,7 +8,6 @@
 
 using namespace std;
 
-<<<<<<< HEAD
 class Network
 {
 	int GROUPS; //количество групп
@@ -16,15 +15,7 @@ class Network
 	int NODES; //количество узлов на коммутатор
 	int BANDWIDTH_IN_GROUP; //пропускная способность внутри группы
 	int BANDWIDTH_BETWEEN_GROUP; //пропускная способность между группами
-=======
-class Network {
 
-	int GROUPS = 5; //количество групп
-	int COMMUTATORS= 2; //количество коммутаторов в группе
-	int NODES = 1; //количество узлов на коммутатор
-	int BANDWIDTH_IN_GROUP = 4; //пропускная способность внутри группы
-	int BANDWIDTH_BETWEEN_GROUP = 2; //пропускная способность между группами
->>>>>>> origin/TestingMain
 
 
 	//int count_groups; 
@@ -35,10 +26,9 @@ class Network {
 	//int bandwidth_between_group;
 	vector<vector<int>> messages;
 	vector<vector<string>> status;
-<<<<<<< HEAD
+
 	vector<vector<int>> path;
-=======
->>>>>>> origin/TestingMain
+
 	
 	//vector<vector<int>> matrix_adj; //Матрица смежности
 	//vector<vector<int>> matrix_wght; //Матрица весов
@@ -57,18 +47,13 @@ class Network {
 public:
 	vector<int> Dijkstra_algorythm(vector<int> message);//, vector<vector<int>> matrix);
 	Network();
-<<<<<<< HEAD
 	Network(int GROUPS,	int COMMUTATORS, int NODES, int BANDWIDTH_IN_GROUP, int BANDWIDTH_BETWEEN_GROUP);
 	void Print_matrix_bandwidth();
 	void NextStep();
-=======
-	
-	void Print_matrix_bandwidth();
 	
 	void menu();
 	int checking_input(int max);
 	void adding_msg();
 
->>>>>>> origin/TestingMain
 };
 
