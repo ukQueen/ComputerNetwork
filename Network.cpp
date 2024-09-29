@@ -222,7 +222,7 @@ vector<int> Network::Dijkstra_algorythm(vector<int> message) {
 				cout << " -> ";
 		}
 
-	return route[index_to];
+	return current_route;
 }
 
 
@@ -300,12 +300,40 @@ void Network::adding_msg() {
 
 	} while (true);
 
-	messages.push_back(vector<int>());
+	/*messages.push_back(vector<int>());
 	messages.back().push_back(dep);
 	messages.back().push_back(length);
-	messages.back().push_back(arr);
+	messages.back().push_back(arr);*/
+	this->AddMessage({dep, length, arr});
 	
 	print_matrix("Матрица сообщений", messages);
+
+}
+
+string Network::statusInfo(int index) {
+
+	if(status[index].size() != 0) return status[index][0];
+	else {
+
+		int a = path[index][0];
+		int b = path[index][1];
+
+		if (path[index][0] == path[index][1]) {
+			string str = "Штраф. Находится в" + to_string(a) + "коммутаторе";
+			return str;
+		}
+
+		int i = 0;
+		while (path[index][i] == a && path[index][i + 1] == b) {
+			i += 2;
+		}
+
+		int done = messages[index][1] - matrix_bandwidth[a][b] * (i / 2 - 1);
+		string str = "На этом шаге передано " + to_string(done) + "/" + to_string(messages[index][1]);
+
+		return str;
+
+	}
 
 }
 
@@ -340,11 +368,20 @@ void Network::menu() {
 				break;
 
 			case 0:
+				cout << "Выход в главное меню...\n";
 				return;
 			}
 		}
 		else {
 
+			if (messages.size() != 0) {
+				for (int i = 0; i < messages.size(); i++) {
+					cout << "{" << messages[i][0] << "," << messages[i][1] << "," << messages[i][2];
+					cout << "} : " << statusInfo(i) << endl;
+				}
+			}
+			else cout << "Нет сообщений для пересылки!" << endl;
+			
 			cout << "\n Выберите действие: \n";
 			cout << " [1] Отправить сообщения (до 10 штук) \n";
 			cout << " [2] Следующий шаг \n";
@@ -372,10 +409,11 @@ void Network::menu() {
 				}
 
 				cout << "Переход к следующему шагу.\n";
+				NextStep();
 				break;
 
 			case 0:
-				cout << "Выход из программы...\n";
+				cout << "Выход в главное меню...\n";
 				return;
 			}
 		}
@@ -384,10 +422,13 @@ void Network::menu() {
 
 
 void Network::AddMessage(vector<int> message) {
+
 	auto path = Dijkstra_algorythm(message);
 	this->messages.push_back(message);
 	this->path.push_back(path);
 	this->status.push_back({ "Сообщение ожидает отправки" });
+
+
 }
 
 void Network::printInfo() {
@@ -404,7 +445,7 @@ void Network::printInfo() {
 void Network::NextStep() {
 	for (int i = 0; i < messages.size();i++) {
 		if (status[i][0] == "Сообщение ожидает отправки") {
-			messages.erase(messages.begin());
+			status[i].pop_back();
 		}
 		else {
 

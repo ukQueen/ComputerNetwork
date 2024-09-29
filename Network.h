@@ -51,7 +51,8 @@ public:
 	void Print_matrix_bandwidth();
 	void NextStep(); 
 	void AddMessage(vector<int> message);
-	
+	string statusInfo(int index);
+
 	void menu();
 	void printInfo();
 	int checking_input(int max);

@@ -30,28 +30,24 @@ int main() {
         case 1:
             //AlexeyShihalev.Print_matrix_bandwidth();
             AlexeyShihalev.printInfo();
-
             AlexeyShihalev.menu();
             break;
 
         case 2: 
             //IgorGladkov.Print_matrix_bandwidth();
             IgorGladkov.printInfo();
-
             IgorGladkov.menu();
             break;
 
         case 3:
             //NikitaRomashko.Print_matrix_bandwidth();
             NikitaRomashko.printInfo();
-
             NikitaRomashko.menu();
             break;
 
         case 4:
             //GeorgyZoloev.Print_matrix_bandwidth();
             GeorgyZoloev.printInfo();
-
             GeorgyZoloev.menu();
             break;
 
