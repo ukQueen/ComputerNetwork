@@ -27,7 +27,8 @@ Network::Network(int GROUPS, int COMMUTATORS, int NODES, int BANDWIDTH_IN_GROUP,
 		}	
 	}
 
-	for (int i = 0, back=COMMUTATORS-1, group=GROUPS-1; i < COMMUTATORS; i++, back--, group-=COMMUTATORS) {
+
+	for (int i = 0, back=COMMUTATORS-1, group=GROUPS-1; i < COMMUTATORS; i++, back--, group-=(GROUPS / COMMUTATORS)) {
 
 		for (int ii = count_nodes + i, group_right=group ; ii < count_vertex; ii+=COMMUTATORS, group_right++) {
 			if (group_right >= GROUPS) {
@@ -35,6 +36,7 @@ Network::Network(int GROUPS, int COMMUTATORS, int NODES, int BANDWIDTH_IN_GROUP,
 			}
 			for (int iii = 0, current_group = group_right; iii < GROUPS/COMMUTATORS; iii++) {
 				current_group = (group_right - iii) < 0 ? GROUPS + (group_right - iii) : group_right - iii;
+				int buf = count_nodes + current_group * COMMUTATORS + back; 
 				matrix_bandwidth[ii][count_nodes + current_group * COMMUTATORS + back] = BANDWIDTH_BETWEEN_GROUP;//пропускная способность между группами
 				matrix_bandwidth[count_nodes + current_group * COMMUTATORS + back][ii] = BANDWIDTH_BETWEEN_GROUP;
 			}
