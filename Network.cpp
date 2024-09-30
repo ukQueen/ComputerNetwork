@@ -465,7 +465,7 @@ void Network::AddMessage(vector<int> message) {
 		int can_send = message[1] < matrix_load[path[0]][path[1]] ? message[1] : matrix_load[path[0]][path[1]];
 		this->reserv.push_back(can_send);
 		matrix_load[path[0]][path[1]] -= can_send;
-		matrix_load[path[1]][path[0]] -= can_send;
+		//matrix_load[path[1]][path[0]] -= can_send;
 	}
 	else
 		this->reserv.push_back(0);
@@ -600,6 +600,8 @@ void Network::NextStep() {
 			}
 			else {
 				messages.erase(messages.begin() + i);
+				matrix_load[path[i][0]][path[i][1]] += reserv[i];
+				matrix_load[path[i][1]][path[i][0]] += reserv[i];
 				path.erase(path.begin() + i);
 				status.erase(status.begin() + i);
 				reminder.erase(reminder.begin() + i);
@@ -610,7 +612,7 @@ void Network::NextStep() {
 
 		}
 		else {
-			if (path[i].size() > 0 && path[i][0] != messages[i][0]) {
+			if (path[i].size() > 0 && path[i][0] != messages[i][0]) { //когда ожидает освобождения пути
 				bool check = false;
 				for (int ii = 0; ii < count_vertex; ii++) {
 					if (matrix_load[ii][messages[i][2]] != 0) {
@@ -643,6 +645,7 @@ void Network::NextStep() {
 bool Network::Can_Make_Route(vector<int> message) {
 	bool flag1 = false;
 	bool flag2 = false;
+	bool flag3 = false;
 	for (int i = 0; i < messages.size(); i++) {
 		if (message[0] == messages[i][0] &&
 			message[1] == messages[i][1] &&
@@ -657,5 +660,9 @@ bool Network::Can_Make_Route(vector<int> message) {
 		if (matrix_load[message[0]][i])
 			flag2 = true;
 	}
-	return flag1 || flag2;
+	/*for (int i = 0; i < count_vertex; i++) {
+		if (matrix_load[message[2]][i])
+			flag3 = true;
+	}*/
+	return flag1 || flag2;//&& flag3;
 }
