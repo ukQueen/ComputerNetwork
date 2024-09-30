@@ -9,7 +9,7 @@ int main() {
     Network NikitaRomashko(10, 3, 4, 3, 3);
     Network GeorgyZoloev(7, 6, 3, 2, 3);
 
-    Network a(7, 2, 1, 3, 5);
+    Network a(7, 2, 1, 5, 3);
 
     cout << "Программа, моделирующая работу механизма передачи сообщения в коммуникационной сети суперкомпьютера" << endl;
 

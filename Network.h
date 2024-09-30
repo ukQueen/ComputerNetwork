@@ -44,6 +44,7 @@ class Network
 
 	bool CheckBoolVector(vector<bool>);
 	int Min_Index(vector<int>, vector<bool>, int cost);
+	bool Can_Make_Route(vector<int> message);
 
 public:
 	vector<int> Dijkstra_algorythm(vector<int> message);//, vector<vector<int>> matrix);
