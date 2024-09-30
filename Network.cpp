@@ -27,7 +27,9 @@ Network::Network(int GROUPS, int COMMUTATORS, int NODES, int BANDWIDTH_IN_GROUP,
 		}	
 	}
 
+
 	for (int i = 0, back=COMMUTATORS-1, group=GROUPS-1; i < COMMUTATORS; i++, back--, group-=GROUPS/COMMUTATORS) {
+
 
 		for (int ii = count_nodes + i, group_right=group ; ii < count_vertex; ii+=COMMUTATORS, group_right++) {
 			if (group_right >= GROUPS) {
@@ -35,6 +37,7 @@ Network::Network(int GROUPS, int COMMUTATORS, int NODES, int BANDWIDTH_IN_GROUP,
 			}
 			for (int iii = 0, current_group = group_right; iii < GROUPS/COMMUTATORS; iii++) {
 				current_group = (group_right - iii) < 0 ? GROUPS + (group_right - iii) : group_right - iii;
+				int buf = count_nodes + current_group * COMMUTATORS + back; 
 				matrix_bandwidth[ii][count_nodes + current_group * COMMUTATORS + back] = BANDWIDTH_BETWEEN_GROUP;//пропускная способность между группами
 				matrix_bandwidth[count_nodes + current_group * COMMUTATORS + back][ii] = BANDWIDTH_BETWEEN_GROUP;
 			}
@@ -164,12 +167,14 @@ vector<int> Network::Dijkstra_algorythm(vector<int> message) {
 			if (i != route[index_to].size() - 1)
 				cout << " -> ";
 		}
+	
 
 	//TODO: закончить реализацию маршрута
 	//cuurent_node будет хранить новый маршрут 
 	//допустим был маршрут 1->(2/5 + 4/5 + 5/5 + фтраф) 20-> (2/5 + 4/5 + 5/5 + фтраф) 21-> (2/5 + 4/5 + 5/5) 2
 	//преобразуется в 1 20 1 20 1 20 20 20 ! 20 21 20 21 20 21 21 21 ! 21 2 21 2 21 2  
 	//шаг по два элемента в массиве (так будет проще)
+
 	vector<int> current_route;
 	for (int i = 0; i < route[index_to].size() - 1; i++) {
 		int index_1;
@@ -217,7 +222,8 @@ vector<int> Network::Dijkstra_algorythm(vector<int> message) {
 			if (i != current_route.size() - 1)
 				cout << " -> ";
 		}
-
+	cout << endl;
+	cout << endl;
 	return current_route;
 }
 
@@ -273,6 +279,8 @@ void Network::adding_msg() {
 	cout << "где адреса находятся в пределах от 0 до " << count_nodes - 1 << " включительно" << endl;
 
 	do {
+	int flag_out1 = false;
+	int flag_out2 = false;
 
 		getline(cin, input);
 		istringstream iss(input);
@@ -286,7 +294,7 @@ void Network::adding_msg() {
 				cout << "Длина сообщения должна быть положительной!" << endl;
 			}
 			else if (dep >= 0 && dep < count_nodes && arr >= 0 && arr < count_nodes && iss.eof()) {
-				break;
+				flag_out1 = true;
 			}
 			else {
 				cout << "Некорретный ввод! Попробуйте снова" << endl;
@@ -294,57 +302,88 @@ void Network::adding_msg() {
 		}
 		else cout << "Некорретный ввод! Попробуйте снова" << endl;
 
+		if (messages.size() == 0) {
+			flag_out2 = true;
+		}
+		else {
+			for (int i = 0; i < messages.size(); i++) {
+				if (dep != messages[i][0] ||
+					length != messages[i][1] ||
+					arr != messages[i][2]) {
+					flag_out2 = true;
+				}
+			}
+		}
+
+		if (flag_out2 == false) {
+			cout << "Такое собщение уже существует! Попробуйте снова" << endl;
+		}
+
+		if (flag_out1 && flag_out2)
+			break;
+
 	} while (true);
 
-	messages.push_back(vector<int>());
+	/*messages.push_back(vector<int>());
 	messages.back().push_back(dep);
 	messages.back().push_back(length);
-	messages.back().push_back(arr);
-	
+	messages.back().push_back(arr);*/
+	this->AddMessage({ dep, length, arr });
+
 	print_matrix("Матрица сообщений", messages);
 
 }
 
+string Network::statusInfo(int index) {
+	/*if (path[index].size() == 0) 
+		return "Сообщение успешно передано";*/
+	if (status[index].size() != 0) 
+		return status[index][0];
+	
+	else {
+
+		int a = path[index][0];
+		int b = path[index][1];
+
+		if (path[index][0] == path[index][1]) {
+			string str = "Штраф. Находится в " + to_string(a) + " коммутаторе";
+			return str;
+		}
+
+		int done = messages[index][1] - reminder[index] + reserv[index];
+		if (done > messages[index][1]) done = messages[index][1];
+
+		string str1, str2;
+		if (a >= count_nodes) str1 = "Из коммутатора " + to_string(a);
+		else str1 = "Из узла " + to_string(a);
+
+		if (b >= count_nodes) str2 = " в коммутатор " + to_string(b);
+		else str2 = " в узел " + to_string(b);
+
+		string str = str1 + str2 + " передано " + to_string(done) + "/" + to_string(messages[index][1]);
+
+		return str;
+
+	}
+}
+
+
 
 void Network::menu() {
-
-	cout << "Программа, моделирующая работу механизма передачи сообщения в коммуникационной сети суперкомпьютера" << endl;
-
-	bool secondMenu = false;
+	int msg_count;
 
 	while (true) {
-		if (!secondMenu) {
+
+		/*if (!secondMenu) {
 
 			cout << "\n Выберите действие: \n";
-			cout << " [1] Отправить сообщение \n";
-			cout << " [0] Выход из программы \n";
+			cout << " [1] Отправить сообщения (до 10 штук) \n";
+			cout << " [0] Сменить студента \n";
 
 			int b = checking_input(1);
 
 			switch (b) {
 
-			case 1:
-				adding_msg();
-				secondMenu = true;
-				break;
-
-
-			case 0:
-				cout << "Выход из программы...\n";
-				return;
-			}
-		}
-		else {
-
-			cout << "\n Выберите действие: \n";
-			cout << " [1] Отправить сообщения (до 10 штук) \n";
-			cout << " [2] Следующий шаг \n";
-			cout << " [0] Выход из программы \n";
-
-			int b = checking_input(2);
-			int msg_count;
-
-			switch (b) {
 			case 1:
 
 				cout << "Введите количество сообщений, которое хотите отправить (от 0 до 10): ";
@@ -353,43 +392,101 @@ void Network::menu() {
 				for (int i = 0; i < msg_count; i++) {
 					adding_msg();
 				}
-				
-				break;
-
-			case 2:
-				if (messages.size() == 0) {
-					cout << " Нет активных процессов передачи сообщений!" << endl;
-					secondMenu = false;
-					break;
-				}
-
-				cout << "Переход к следующему шагу.\n";
+				secondMenu = true;
 				break;
 
 			case 0:
-				cout << "Выход из программы...\n";
+				cout << "Выход в главное меню...\n";
 				return;
 			}
 		}
+		else {*/
+
+		if (messages.size() != 0) {
+			for (int i = 0; i < messages.size(); i++) {
+				cout << "{" << messages[i][0] << "," << messages[i][1] << "," << messages[i][2];
+				cout << "} : " << statusInfo(i) << endl;
+			}
+		}
+		else cout << "Нет сообщений для пересылки!" << endl;
+
+		cout << "\n Выберите действие: \n";
+		cout << " [1] Отправить сообщения (до 10 штук) \n";
+		if (messages.size() != 0)
+			cout << " [2] Следующий шаг \n";
+		cout << " [0] Сменить студента \n";
+
+		int b;
+		if (messages.size() == 0)
+			b = checking_input(1);
+		else
+			b = checking_input(2);
+
+		switch (b) {
+		case 1:
+
+			cout << "Введите количество сообщений, которое хотите отправить (от 0 до 10): ";
+			msg_count = checking_input(11);
+
+			for (int i = 0; i < msg_count; i++) {
+				adding_msg();
+			}
+
+			break;
+
+		case 2:
+			/*if (messages.size() == 0) {
+				cout << " Нет активных процессов передачи сообщений!" << endl;
+				break;
+			}*/
+
+			cout << "Переход к следующему шагу.\n";
+			NextStep();
+			break;
+
+		case 0:
+			cout << "Выход в главное меню...\n";
+			return;
+		}
 	}
-}
+};
 
 
 void Network::AddMessage(vector<int> message) {
-	//обработать ситуацию когда соо из одного источника
-	auto path = Dijkstra_algorythm(message);
+	vector <int> path;
 	this->messages.push_back(message);
+	if (Can_Make_Route(message))
+		path = Dijkstra_algorythm(message);
 	this->path.push_back(path);
 	this->status.push_back({ "Сообщение ожидает отправки" });
 	this->reminder.push_back(message[1]);
-	this->reserv.push_back(true);////////////////////
+
+	if (Can_Make_Route(message)) {
+		int can_send = message[1] < matrix_load[path[0]][path[1]] ? message[1] : matrix_load[path[0]][path[1]];
+		this->reserv.push_back(can_send);
+		matrix_load[path[0]][path[1]] -= can_send;
+		matrix_load[path[1]][path[0]] -= can_send;
+	}
+	else
+		this->reserv.push_back(0);
 }
 
+void Network::printInfo() {
+
+	cout << "\nКоличество групп: " << GROUPS << endl;
+	cout << "Количество коммутаторов в группе: " << COMMUTATORS << endl;
+	cout << "Количество узлов на коммутатор: " << NODES << endl;
+	cout << "Пропускная способность внутри группы: " << BANDWIDTH_IN_GROUP << endl;
+	cout << "Пропускная способность между группами: " << BANDWIDTH_BETWEEN_GROUP << endl;
+
+}
 
 void Network::NextStep() {
-	for (int i = 0; i < messages.size(); i++) {
-		if (status[i][0].size() == 0) {//рассматриваются ситации когда сообщение уже передается
 
+	for (int i = 0; i < messages.size(); i++) {
+		
+		if (status[i].size() == 0) {//рассматриваются ситуации когда сообщение уже передается
+			
 			int local_from = path[i][0]; //точка в которой сейчас находится сообщение
 			int local_to = path[i][1]; //точка в которую передается шаг на данном шаге
 			int index_from = messages[i][0]; //отправитель
@@ -398,61 +495,167 @@ void Network::NextStep() {
 
 
 			if (local_from == path[i][1]) {// ситауция когда сообщение находится в одном узле из за штрафа (то есть никуда не передается)
-				matrix_load[local_from][local_to] += reserv[i];
-				matrix_load[local_to][local_from] += reserv[i];
+				//matrix_load[local_from][index_to] += reserv[i];
+				//matrix_load[index_to][local_from] += reserv[i];
 				reserv[i] = 0;
-				vector<int> new_path = Dijkstra_algorythm({ local_from, message_cost, index_to });
-				new_path.insert(new_path.begin(), { path[i][0],path[i][1] });
-				path[i] = new_path;
-				reminder[i] = message_cost;
+				bool check = false;
+				for (int ii = 0; ii < count_vertex; ii++) {
+					if (matrix_load[ii][index_to] != 0) {
+						check = true;
+						break;
+					}
+				}
+				if (check) {
+					vector<int> new_path = Dijkstra_algorythm({ local_from, message_cost, index_to });
+					new_path.insert(new_path.begin(), { path[i][0],path[i][1] });
+					path[i] = new_path;
+					reminder[i] = message_cost;
+
+					int can_send = message_cost < matrix_load[path[i][2]][path[i][3]] ? message_cost : matrix_load[path[i][2]][path[i][3]];
+
+					reserv[i] = can_send;
+					matrix_load[path[i][2]][path[i][3]] -= can_send;
+					matrix_load[path[i][3]][path[i][2]] -= can_send;
+				}
+				else {
+					string status = "Ожидает освобождения пути. Находится в " + to_string(local_from) + " коммутаторе";
+					this->status[i].push_back({ status });
+				}
 			}
 			else { //ситуация когда передается сообщение из одного узда в другой
 				//пропускная способность изменяется
-				int can_send = reminder[i] < matrix_load[local_from][local_to] ? reminder[i] : matrix_load[local_from][local_to];
+				if (matrix_load[local_from][local_to] > 0) {
+					int can_send = reminder[i] < matrix_load[local_from][local_to] ? reminder[i] : matrix_load[local_from][local_to];
 
-				int need_steps = reminder[i] / can_send;
-				need_steps = reminder[i] % can_send == 0 ? need_steps : need_steps + 1;
+					int need_steps = reminder[i] / can_send;
+					need_steps = reminder[i] % can_send == 0 ? need_steps : need_steps + 1;
 
-				matrix_load[index_from][index_to] -= can_send;
-				matrix_load[index_to][index_from] -= can_send;
-				reserv[i] = can_send;
+					matrix_load[local_from][local_to] -= can_send;
+					matrix_load[local_to][local_from] -= can_send;
+					reserv[i] = can_send;
 
-				if (path.size() > 2) {//сообщение может измениться если пропускная способность увеличилась
+					if (path[i].size() > 2) {//сообщение может измениться если пропускная способность увеличилась
 
-					int old_steps;//считаем сколько было шагов 
-					for (int ii = 0; ii < path.size() - 2; ii += 2) {
-						if (!(local_from == path[i][ii] && local_to == path[i][ii + 1])) {
-							old_steps = ii / 2;
-							break;
+						int old_steps = 0;//считаем сколько было шагов 
+						for (int ii = 0; ii < path[i].size() - 2; ii += 2) {
+							if (local_from == path[i][ii] && local_to == path[i][ii + 1]) {
+								old_steps++;
+							}
+							else {
+								break;
+							}
+						}
+						if (need_steps< old_steps) {
+							
+							for (int iii = 0; iii < old_steps - need_steps; iii++) {
+								path[i].erase(path[i].begin());
+								path[i].erase(path[i].begin());
+							}
+
 						}
 					}
-					if (old_steps != need_steps) {
-						path[i].erase(path[i].begin(), path[i].begin() + old_steps * 2);
-						for (int iii = 0; iii < need_steps; iii++) {
-							path[i].insert(path[i].begin(), { local_from, local_to });
-						}
-					}
+
+					reminder[i] -= can_send;
+				}
+				else {
+					reminder[i] -= reserv[i];
 				}
 
-				reminder[i] -= can_send;
-
 			}
 
-			//в конце шага нам нужн удалить данный шаг
-			if (path[i].size() != 0) {
-				path[i].erase(path[i].begin());
-				//status[i].erase(status[i].begin());
-			}
-			else {
-				messages.erase(messages.begin());
-				path.erase(path.begin());
-				//status.erase(status.begin());
-			}
-		}
-
-		else {
-			status[i].erase(status[i].begin());
+			//	//в конце шага нам нужн удалить данный шаг
+			//	if (path[i].size() != 0) {
+			//		path[i].erase(path[i].begin());
+			//		path[i].erase(path[i].begin());
+			//		//status[i].erase(status[i].begin());
+			//	}
+			//	else {
+			//		messages.erase(messages.begin());
+			//		path.erase(path.begin());
+			//		//status.erase(status.begin());
+			//	}
+			//}
+			//else {
+			//	status[i].erase(status[i].begin());
 
 		}
 	}
+
+
+
+	for (int i = 0; i < messages.size(); i++) {
+		if (status[i].size() == 0) {//рассматриваются ситуации когда сообщение уже передается
+
+			//в конце шага нам нужно удалить данный шаг
+			if (path[i].size() > 2) {
+				matrix_load[path[i][0]][path[i][1]] += reserv[i];
+				matrix_load[path[i][1]][path[i][0]] += reserv[i];
+				path[i].erase(path[i].begin());
+				path[i].erase(path[i].begin());
+
+				//status[i].erase(status[i].begin());
+				//if (path[i].size() == 0)
+				//status[i].push_back({"Сообщение успешно доставлено"});
+
+			}
+			else {
+				messages.erase(messages.begin() + i);
+				path.erase(path.begin() + i);
+				status.erase(status.begin() + i);
+				reminder.erase(reminder.begin() + i);
+				reserv.erase(reserv.begin() + i);
+				i--;
+			}
+
+
+		}
+		else {
+			if (path[i].size() > 0 && path[i][0] != messages[i][0]) {
+				bool check = false;
+				for (int ii = 0; ii < count_vertex; ii++) {
+					if (matrix_load[ii][messages[i][2]] != 0) {
+						check = true;
+						break;
+					}
+				}
+				if (check) {
+					status[i].erase(status[i].begin());
+				}
+			}
+			else {
+				if (Can_Make_Route(messages[i])) {//это для начальных этапов
+					status[i].erase(status[i].begin());
+					if (reserv[i] == 0) {
+						path[i] = Dijkstra_algorythm(messages[i]);
+						int can_send = messages[i][1] < matrix_load[path[i][0]][path[i][1]] ? messages[i][1] : matrix_load[path[i][0]][path[i][1]];
+						reserv[i] = can_send;
+						matrix_load[path[i][0]][path[i][1]] -= can_send;
+						matrix_load[path[i][1]][path[i][0]] -= can_send;
+					}
+				}
+			}
+		}
+	}
+	matrix_load = matrix_bandwidth;
+}
+
+
+bool Network::Can_Make_Route(vector<int> message) {
+	bool flag1 = false;
+	bool flag2 = false;
+	for (int i = 0; i < messages.size(); i++) {
+		if (message[0] == messages[i][0] &&
+			message[1] == messages[i][1] &&
+			message[2] == messages[i][2]){
+
+			if (i < reserv.size() && reserv[i] > 0) {
+				flag1 = true;
+			}
+		}
+	}
+	for (int i = 0; i < count_vertex; i++) {
+		if (matrix_load[message[0]][i])
+			flag2 = true;
+	}
+	return flag1 || flag2;
 }
