@@ -26,11 +26,13 @@ class Network
 	vector<int> reminder; //сколько осталось передать от одной вершины к другой
 	vector<vector<int>> matrix_bandwidth; //ћатрица пропусных способностей
 	vector<vector<int>> matrix_load; //ћатрица загруженности
+	int counter;//счетчик шагов
 
 	void print_matrix(string str, vector<vector<int>> matr);
 	bool CheckBoolVector(vector<bool>);
 	int Min_Index(vector<int>, vector<bool>, int cost);
 	bool Can_Make_Route(vector<int> message);
+	bool Can_Dijkstra(vector<int> message);
 	vector<int> Dijkstra_algorythm(vector<int> message);//, vector<vector<int>> matrix);
 	void Print_matrix_bandwidth();
 	void NextStep(); 

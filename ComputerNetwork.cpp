@@ -22,7 +22,7 @@ int main() {
         cout << " [4] Георгий Золоев {7, 6, 3, 2, 3}\n";
         cout << " [0] Выход из программы\n";
 
-        int b = a.checking_input(4);
+        int b = a.checking_input(5); //////////изменить на 4
 
         switch (b) {
 
